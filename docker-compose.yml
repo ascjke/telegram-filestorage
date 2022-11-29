@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:14.5
+    container_name: pogreb
+    env_file:
+      - config/.envfile
+    ports:
+      - '5434:5432'
+    volumes:
+      - pogreb:/var/lib/postgresql/data
+
+
+  rabbitmq:
+    image: rabbitmq:3.11.0-management
+    container_name: rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+
+volumes:
+  pogreb:
+  rabbitmq_data:
+
