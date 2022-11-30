@@ -81,6 +81,5 @@ public class UpdateController {
 
     private void processTextMessage(Update update) {
         updateProducer.produce(TEXT_MESSAGE_UPDATE, update);
-        setFileIsReceivedView(update);
     }
 }
