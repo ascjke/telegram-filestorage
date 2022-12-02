@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import ru.borisov.dao.AppUserDao;
 import ru.borisov.dao.RawDataDAO;
 import ru.borisov.entity.AppDocument;
+import ru.borisov.entity.AppPhoto;
 import ru.borisov.entity.AppUser;
 import ru.borisov.entity.RawData;
 import ru.borisov.exceptions.UploadFileException;
@@ -97,8 +98,6 @@ public class MainServiceImpl implements MainService {
         }
     }
 
-
-
     @Override
     public void processPhotoMessage(Update update) {
         saveRawData(update);
@@ -107,9 +106,19 @@ public class MainServiceImpl implements MainService {
         if (isNotAllowToSendContent(chatId, appUser)) {
             return;
         }
-        //TODO добавить сохранение фото
-        var answer = "Фото успешно загружено! Ссылка для скачивания:  http://test.ru/get-photo/777";
-        sendAnswer(answer, chatId);
+
+        try {
+            AppPhoto photo = fileService.processPhoto(update.getMessage());
+            //TODO добавить генарацию ссылки для скачивания фото
+            var answer = "Фото успешно загружено! Ссылка для скачивания:  http://test.ru/get-photo/777";
+            sendAnswer(answer, chatId);
+        } catch (UploadFileException ex) {
+            log.error(ex);
+            String error = "К сожалению, загрузка фото не удалась. Повторите попытку позже.";
+            sendAnswer(error, chatId);
+        }
+
+
     }
 
     private void sendAnswer(String output, Long chatId) {
